@@ -208,4 +208,3 @@ DEFINE_FWK_MODULE(HLTExclDiPFJetFilter);
 #include "HLTrigger/JetMET/src/HLTMhtHtFilter.cc"
 typedef HLTMhtHtFilter<CaloJet> HLTCaloMhtHtFilter;
 DEFINE_FWK_MODULE(HLTCaloMhtHtFilter);
-
