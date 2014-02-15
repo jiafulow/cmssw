@@ -10,7 +10,9 @@
 #include "HLTrigger/JetMET/interface/HLTRapGapFilter.h"
 #include "HLTrigger/JetMET/interface/HLTPFEnergyFractionsFilter.h"
 #include "HLTrigger/JetMET/interface/HLTHtMhtFilter.h"
+#include "HLTrigger/JetMET/interface/HLTHtMhtFilter2.h"
 #include "HLTrigger/JetMET/interface/HLTMhtFilter.h"
+#include "HLTrigger/JetMET/interface/HLTMhtFilter2.h"
 #include "HLTrigger/JetMET/interface/HLTHPDFilter.h"
 #include "HLTrigger/JetMET/interface/HLTHcalMETNoiseCleaner.h"
 #include "HLTrigger/JetMET/interface/HLTHcalMETNoiseFilter.h"
@@ -19,11 +21,17 @@
 #include "HLTrigger/JetMET/interface/PFJetsMatchedToFilteredCaloJetsProducer.h"
 #include "HLTrigger/JetMET/interface/HLTNVFilter.h"
 #include "HLTrigger/JetMET/interface/HLTCaloJetIDProducer.h"
+#include "HLTrigger/JetMET/interface/HLTCaloJetIDProducer2.h"
 #include "HLTrigger/JetMET/interface/HLTPFJetIDProducer.h"
+#include "HLTrigger/JetMET/interface/HLTPFJetIDProducer2.h"
+#include "HLTrigger/JetMET/interface/HLTMETCleanerUsingJetID.h"
 
 //Work with all jet collections without changing the module name
 #include "HLTrigger/JetMET/interface/HLTHtMhtProducer.h"
+#include "HLTrigger/JetMET/interface/HLTHtMhtProducer2.h"
 #include "HLTrigger/JetMET/interface/HLTMhtProducer.h"
+#include "HLTrigger/JetMET/interface/HLTMhtProducer2.h"
+#include "HLTrigger/JetMET/interface/HLTMinDPhiMETFilter.h"
 
 //Template
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
@@ -128,20 +136,28 @@ DEFINE_FWK_MODULE(HLTPhi2METFilter);
 DEFINE_FWK_MODULE(HLTRapGapFilter);
 DEFINE_FWK_MODULE(HLTPFEnergyFractionsFilter);
 DEFINE_FWK_MODULE(HLTHtMhtFilter);
+DEFINE_FWK_MODULE(HLTHtMhtFilter2);
 DEFINE_FWK_MODULE(HLTMhtFilter);
+DEFINE_FWK_MODULE(HLTMhtFilter2);
 DEFINE_FWK_MODULE(HLTHPDFilter);
 DEFINE_FWK_MODULE(HLTCaloJetIDProducer);
+DEFINE_FWK_MODULE(HLTCaloJetIDProducer2);
 DEFINE_FWK_MODULE(HLTPFJetIDProducer);
+DEFINE_FWK_MODULE(HLTPFJetIDProducer2);
 DEFINE_FWK_MODULE(HLTHcalMETNoiseFilter);
 DEFINE_FWK_MODULE(HLTHcalMETNoiseCleaner);
 DEFINE_FWK_MODULE(HLTHcalLaserFilter);
 DEFINE_FWK_MODULE(HLTHcalTowerNoiseCleaner);
 DEFINE_FWK_MODULE(HLTNVFilter);
 DEFINE_FWK_MODULE(PFJetsMatchedToFilteredCaloJetsProducer);
+DEFINE_FWK_MODULE(HLTMETCleanerUsingJetID);
 
 //Work with all jet collections without changing the module name
 DEFINE_FWK_MODULE(HLTMhtProducer);
+DEFINE_FWK_MODULE(HLTMhtProducer2);
 DEFINE_FWK_MODULE(HLTHtMhtProducer);
+DEFINE_FWK_MODULE(HLTHtMhtProducer2);
+DEFINE_FWK_MODULE(HLTMinDPhiMETFilter);
 
 //Templates
 
@@ -192,3 +208,4 @@ DEFINE_FWK_MODULE(HLTExclDiPFJetFilter);
 #include "HLTrigger/JetMET/src/HLTMhtHtFilter.cc"
 typedef HLTMhtHtFilter<CaloJet> HLTCaloMhtHtFilter;
 DEFINE_FWK_MODULE(HLTCaloMhtHtFilter);
+
