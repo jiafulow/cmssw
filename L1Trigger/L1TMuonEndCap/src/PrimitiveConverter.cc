@@ -18,16 +18,16 @@
 #include "L1Trigger/CSCTrackFinder/test/src/RefTrack.h"
 
 #include "L1Trigger/L1TMuonEndCap/interface/EmulatorClasses.h"
+#include "L1Trigger/L1TMuonEndCap/interface/MakeRegionalCand.h"
 
 using namespace std;
-
-int ph_offsets_neighbor[5][10][3] = {{{39,39,-99}  ,{57,57,-99}   ,{76,76,-99}   ,{39,-99,-99} ,{58,-99,-99}  ,{76,-99,-99}  ,{41,-99,-99} ,{60,-99,-99}   ,{79,-99,-99}     ,{21,21,23}  },//not sure if 23 is done right yet
-			   						 {{95,95,-99}  ,{114,114,-99} ,{132,132,-99} ,{95,-99,-99} ,{114,-99,-99} ,{133,-99,-99} ,{98,-99,-99} ,{116,-99,-99}  ,{135,-99,-99}    ,{21,21,23}  },//not sure if 23 is done right yet
-			   						 {{38,38,-99}  ,{76,76,-99}   ,{113,113,-99} ,{39,39,-99}  ,{58,58,-99}   ,{76,76,-99}   ,{95,95,-99}  ,{114,114,-99}  ,{132,132,-99}    ,{1,21,21}  },
-			   						 {{38,-99,-99} ,{76,-99,-99}  ,{113,-99,-99} ,{39,39,39}   ,{58,58,58}    ,{76,76,76}    ,{95,95,95}   ,{114,114,114}  ,{132,132,132}    ,{1,21,21}  },
-			   						 {{38,-99,-99} ,{76,-99,-99}  ,{113,-99,-99} ,{38,38,-99}  ,{57,57,-99}   ,{76,76,-99}   ,{95,95,-99}  ,{113,113,-99}  ,{132,132,-99}    ,{1,20,20}  }};//[station][id][phzvl look up #(-99 indicates invaled entry)]
-
-
+							  
+int ph_offsets[6][9] = {{39,57,76,39,58,76,41,60,79},
+						{95,114,132,95,113,132,98,116,135},
+						{38,76,113,39,58,76,95,114,132},
+						{38,76,113,39,58,76,95,114,132},
+						{38,76,113,38,57,76,95,113,132},
+						{21,21,23,1,21,1,21,1,20}};
 
 
 bool neighbor(int endcap,int sector,int SectIndex,int id,int sub,int station){
@@ -122,7 +122,7 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	if(ring == 4){Id += 9;}
 
 	//if(endcap == 1 && sector == 1)//
-	if( (SectIndex ==  (endcap - 1)*6 + sector - 1 )  || IsNeighbor )
+	if( (SectIndex ==  (endcap - 1)*6 + sector - 1 ) || IsNeighbor )
 	{
 	
 		
@@ -279,6 +279,8 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	ph_tmp = ((eightstrip*factor)>>10);
 	int phShift = (ph_tmp>>5);
 	int phLow = 0;
+	
+	//std::cout<<"\nph_tmp = "<<ph_tmp<<"\n";
 
 	if(ph_reverse){
 	
@@ -345,7 +347,7 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	
 		}
 		
-		//std::cout<<"nid = "<<neighborId<<", idl = "<<idl<<"\n";
+		//std::cout<<"\n\nnid = "<<neighborId<<", idl = "<<idl<<"\n";
 		
 		th_tmp = Th_LUT_St1_Neighbor_[subId-1][SectIndex][idl -1][wire];
 		//std::cout<<"th_tmpr = "<<th_tmp<<"\n";
@@ -386,16 +388,10 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 			corrIndex++;
 		}
 			
-		//std::cout<<"corrIndex = "<<corrIndex<<"\n";
+	
+		th_corr = Th_Corr_Neighbor_[subId-1][SectIndex][corrIndex-1][index];
+		//std::cout<<"th_corr["<<subId-1<<"]["<<SectIndex<<"]["<<corrIndex-1<<"]["<<index<<"] = "<<th_corr<<"\n";
 		
-		//if(Id > 3){
-		//	th_corr = Th_Corr_Neighbor_[sub-1][SectIndex][Id-10][index];
-			//if(verbose) std::cout<<"\n\nth_corr = "<<th_corr<<"\n\n";
-		//}
-		//else{
-			th_corr = Th_Corr_Neighbor_[subId-1][SectIndex][corrIndex-1][index];
-			//std::cout<<"th_corr["<<subId-1<<"]["<<SectIndex<<"]["<<corrIndex-1<<"] = "<<th_corr<<"\n";
-		//}
 		
 		
 		if(ph_reverse) th_corr = -th_corr;
@@ -404,13 +400,18 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 		
 		th_tmp += th_corr;                  //add correction to th_tmp
 		//std::cout<<"th_tmp = "<<th_tmp<<"\n";
-		if(th_tmp < 0)
+		if(th_tmp < 0 || wire == 0)
 			th_tmp = 0;
+			
+		if(th_tmp > th_coverage)//this is one change that I'm not sure if it does anything good or not
+			th_tmp = th_coverage;	
+		
+		
 		th_tmp &= 0x3f;                     //keep only lowest 6 bits
 		//std::cout<<"th_tmp = "<<th_tmp<<"\n";
 		//std::cout<<"coverage = "<<th_coverage<<"\n";
 		
-		if(th_tmp < th_coverage){
+		if(th_tmp <= th_coverage){
 		
 			//if(ring == 1){LUTi += 9;}  //change because new Verilog3 sp_tf treats ME11b with LUT's of ME11a
 			
@@ -440,17 +441,11 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	}
 	
 	
-	
 	////////////////////////////////////////////////////
 	/////   Calculate Zhit and ZoneContribution    /////
 	/////    Before the zone creation so it can    /////
 	/////  Be an artifact of Converted Hit Class   /////
 	////////////////////////////////////////////////////
-	
-	
-	
-	int zhit = -99, pz = -99;
-	std::vector<int> zonecontribution; //Each hit could go in more than one zone so we make a vector which stores all the zones for which this hit will contribute
 
 	if(ring == 4){
 		Id -= 9;
@@ -459,37 +454,36 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 			strip += 128;
 	}
 	
-	
 	//determination of zone contribution
-	if((phzvl & 1) && (Id < 4 || Id > 9)){pz=0;zonecontribution.push_back(0);}
-	if((phzvl & 2) && (Id < 4)){pz=1;zonecontribution.push_back(1);}
-	if((phzvl & 1) && (Id > 3) && (station > 2)){pz=0;zonecontribution.push_back(1);}
-	if((phzvl & 1) && (Id > 3) && (Id < 7) && (station == 1)){pz=0;zonecontribution.push_back(2);}
-	if((phzvl & 1) && (Id > 3) && (station == 2)){pz=0;zonecontribution.push_back(2);}
-	if((phzvl & 2) && (Id > 3) && (station > 2)){pz=1;zonecontribution.push_back(2);}
-	if((phzvl & 1) && (Id > 4) && (station < 2)){pz=0;zonecontribution.push_back(3);}
-	if(phzvl & 4){pz=2;zonecontribution.push_back(3);}
-	if((phzvl & 2) && (Id > 3) && (station < 3)){pz=1;zonecontribution.push_back(3);}
+	int zoneword = 0, zhit = -99, zmask[4] = {1,2,4,8};
+	bool zoneConditions[4] {((phzvl & 1) && (Id < 4)),
+							(((phzvl & 2) && (Id < 4) && (station < 3)) || ((phzvl & 1) && (Id > 3) && (station > 2))),
+							(((phzvl & 1) && (Id > 3) && (Id < 7) && (station == 1)) || ((phzvl & 1) && (Id > 3) && (station == 2)) || ((phzvl & 2) && (Id > 3) && (station > 2))),
+							( ((station == 1) && (Id > 6)) || ((phzvl & 2) && (Id > 3) && (station == 2)) || ((phzvl & 4) && (station == 3) && (Id > 3)) )};
 	
+	for(int z=0;z<4;z++){
 	
-	int phOffIndex = Id;
-	if(IsNeighbor)
-		phOffIndex = 10;
+		if(zoneConditions[z])
+			zoneword |= zmask[z];
 	
-	//applying ph_offsets
-	if(sub == 1){
-		zhit = ph_hit + ph_offsets_neighbor[station-1][phOffIndex-1][pz];
-		//std::cout<<"\nph_hit = "<<ph_hit<<" and ph_offsets_neighbor["<<station-1<<"]["<<phOffIndex-1<<"]["<<pz<<"] = "<<ph_offsets_neighbor[station-1][phOffIndex-1][pz]<<"\n";
-	}
-	else{
-			
-		zhit = ph_hit + ph_offsets_neighbor[station][phOffIndex-1][pz];
-		//std::cout<<"ph_hit = "<<ph_hit<<" and ph_offsets_neighbor["<<station<<"]["<<phOffIndex-1<<"]["<<pz<<"] = "<<ph_offsets_neighbor[station][phOffIndex-1][pz]<<"\n";
 	}
 	
+	int cindex = Id - 1;
+	int sindex = station;
+	if(sub == 1)
+		sindex--;
 	
-		
+	if(IsNeighbor){
 	
+		sindex = 5;
+		if(station == 1)
+			cindex = Id/3 - 1;
+		else
+			cindex = (station - 1)*2 + ((Id > 6) ? 2:1);
+	
+	}
+	
+	zhit = ph_hit + ph_offsets[sindex][cindex];
 		
 	///////////////////////////////////////////////////////
 	//////// set vector of ConvertedHits to move //////////
@@ -497,18 +491,17 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	///////////////////////////////////////////////////////
 	
 	
-	//if(SectIndex == 8){
-		//std::cout<<"phi = "<<fph<<", theta = "<<th<<", ph_hit = "<<ph_hit<<",zhit = "<<zhit<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
-	
-		//std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id()<<" 0 "<<strip<<"\n";
+	if(SectIndex == 9 ){
+		std::cout<<"pl = "<<phLow<<", ps = "<<phShift<<", ph disp = "<<Ph_Disp_Neighbor_[SectIndex][LUTi]<<", >>1 = "<<(Ph_Disp_Neighbor_[SectIndex][LUTi]>>1)<<", LUTi = "<<LUTi<<"\n";
+		std::cout<<"phi = "<<fph<<", theta = "<<th<<", GMT_eta = "<<GetPackedEta(th,SectIndex)<<", bx = "<<BX<<", zoneword = "<<zoneword<<", ph_hit = "<<ph_hit<<", zhit = "<<zhit<<", sindex = "<<sindex<<", cindex = "<<cindex<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
+		//std::cout<<"ph_zone_bnd1 = "<<ph_zone_bnd1<<", ph_zone_bnd2 = "<<ph_zone_bnd2<<", zone_overlap = "<<zone_overlap<<", and phzvl = "<<phzvl<<"\n";
+	//if(!IsNeighbor){
+	  if(C3.Id() > 9)
+		  std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id() - 9<<" 0 "<<strip<<"\n";
+	  else
+		  std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id()<<" 0 "<<strip<<"\n";
 	//}
-	
-	/* if(station != 1) */
-	/* 	sub = 1; */
-	/* std::cout<<"proper FR[0] = "<<FRLUT[endcap-1][sector-1][station-1][sub-1][Id-1]<<"\n"; */
-	/* if(station != 1) */
-	/* 	sub = 0; */
-
+	}
 	
 	ConvertedHit Hit;
 	
@@ -517,13 +510,14 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 		in = 1;
 
 	Hit.SetValues(fph,th,ph_hit,phzvl,station,sub,Id,quality,pattern,wire,strip,BX);
+	Hit.AddTheta(th);
 	Hit.SetTP(C3);
 	Hit.SetZhit(zhit);
-	Hit.SetZoneContribution(zonecontribution);
 	Hit.SetSectorIndex(SectIndex);
 	Hit.SetNeighbor(in);
+	Hit.SetZoneWord(zoneword);
 
-	if(Hit.Theta() != -999 && Hit.Phi() > 0){//if theta is valid
+	if(Hit.Theta() != -999 && Hit.Phi() > 0 && SectIndex == 9 ){//if theta is valid
 		ConvHits.push_back(Hit);
 		/*if(verbose){	
 			std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;

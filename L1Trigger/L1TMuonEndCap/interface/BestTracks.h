@@ -12,7 +12,7 @@ Date: 7/29/13
 
 std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 
-	//bool verbose = false;
+	bool verbose = false;
 
 	int larger[12][12] = {{0},{0}}, kill[12] = {0};
 	int exists[12] = {0};
@@ -24,6 +24,7 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			for(int d=0;d<4;d++){
 				
 					phi[r][t][d] = Dout[r][t].GetMatchOut().PhiMatch()[r][t][d].Phi();
+					//if(phi[r][t][d] != -999) std::cout<<"phi = "<<phi[r][t][d]<<"\n";
 					id[r][t][d] = Dout[r][t].GetMatchOut().PhiMatch()[r][t][d].Id();
 			}
 		}
@@ -91,6 +92,11 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			for(int j=0;j<12;j++){
 			
 				int rankj = Dout[j%4][j/4].GetWinner().Rank();
+				//if(ranki && rankj){
+					
+					//std::cout<<"ranki = "<<ranki<<", and rankj = "<<rankj<<"\n";
+				
+				//}
 				bool greater = (ranki > rankj);
 				bool equal = (ranki == rankj);
 			
@@ -104,6 +110,7 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 	
 
 	// ghost cancelltion. only in current BX so far(as in firmware as well)
+	int vmask[4] = {32,8,2,1};
 	for(int k=0;k<12;k++){
 	
 		for(int l=0;l<12;l++){
@@ -120,6 +127,8 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 					&& ((phi[k%4][k/4][s] != -999) || (phi[l%4][l/4][s] != -999))
 					&& (phi[k%4][k/4][s] == phi[l%4][l/4][s])
 					&& (k != l)
+					&& (Dout[k%4][k/4].GetWinner().Rank() & vmask[s]) //station from track one is valid after deltas
+					&& (Dout[l%4][l/4].GetWinner().Rank() & vmask[s]) //station from track two is valid after deltas
 					){
 					
 						sh_seg++;
@@ -131,7 +140,7 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			if(sh_seg){
 		
 				//kill candidate that has lower rank
-				//if(verbose) std::cout<<"\nsh_seg != 0\nk = "<<k<<" and l = "<<l<<"\n";
+				if(verbose) std::cout<<"\nsh_seg != 0\nk = "<<k<<" and l = "<<l<<"\n";
 				if(larger[k][l]){kill[l] = 1;}
 				else{kill[k] = 1;}
 			}
@@ -181,10 +190,23 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 			
 				BTrack bests;
 				
-				//if(verbose) std::cout<<"Best Rank "<<n<<" = "<<Dout[i%4][i/4].GetWinner().Rank()<<"\n\n";
-				//if(verbose) std::cout<<"Phi = "<<Dout[i%4][i/4].Phi()<<" and Theta = "<<Dout[i%4][i/4].Theta()<<"\n\n";
-				//if(verbose) std::cout<<"Ph Deltas: "<<Dout[i%4][i/4].Deltas()[0][0]<<" "<<Dout[i%4][i/4].Deltas()[0][1]<<"   Th Deltas: "<<Dout[i%4][i/4].Deltas()[1][0]
-				//													     <<" "<<Dout[i%4][i/4].Deltas()[1][1]<<"\n\n";
+				
+				int mode = 0;
+				if(Dout[i%4][i/4].GetWinner().Rank() & 32)
+					mode |= 8;
+				if(Dout[i%4][i/4].GetWinner().Rank() & 8)
+					mode |= 4;
+				if(Dout[i%4][i/4].GetWinner().Rank() & 2)
+					mode |= 2;
+				if(Dout[i%4][i/4].GetWinner().Rank() & 1)
+					mode |= 1;
+				
+				if(verbose) std::cout<<"Best Rank "<<n<<" = "<<Dout[i%4][i/4].GetWinner().Rank()<<" and mode = "<<mode<<"\n\n";
+				if(verbose) std::cout<<"Phi = "<<Dout[i%4][i/4].Phi()<<" and Theta = "<<Dout[i%4][i/4].Theta()<<"\n\n";
+				if(verbose) std::cout<<"Ph Deltas: "<<Dout[i%4][i/4].Deltas()[0][0]<<" "<<Dout[i%4][i/4].Deltas()[0][1]<<" "<<Dout[i%4][i/4].Deltas()[0][2]<<" "<<Dout[i%4][i/4].Deltas()[0][3]
+										<<" "<<Dout[i%4][i/4].Deltas()[0][4]<<" "<<Dout[i%4][i/4].Deltas()[0][5]<<"   \nTh Deltas: "<<Dout[i%4][i/4].Deltas()[1][0]
+																	 <<" "<<Dout[i%4][i/4].Deltas()[1][1]<<" "<<Dout[i%4][i/4].Deltas()[1][2]<<" "<<Dout[i%4][i/4].Deltas()[1][3]
+																	 <<" "<<Dout[i%4][i/4].Deltas()[1][4]<<" "<<Dout[i%4][i/4].Deltas()[1][5]<<"\n\n";
 						
 				bests.winner = Dout[i%4][i/4].GetWinner();
 				bests.phi = Dout[i%4][i/4].Phi();
@@ -207,3 +229,25 @@ std::vector<BTrack> BestTracks(std::vector<std::vector<DeltaOutput>> Dout){
 
 
 }
+
+
+std::vector<std::vector<BTrack>> BestTracks_Hold(std::vector<std::vector<std::vector<DeltaOutput>>> Dout){
+
+	
+	BTrack tmp;
+	std::vector<BTrack> output (3,tmp);
+	std::vector<std::vector<BTrack>> full_output (3,output);
+
+	for(int bx=0;bx<3;bx++){
+	
+		//std::cout<<"Best tracks "<<bx<<"\n";
+		full_output[bx] = BestTracks(Dout[bx]);
+	
+	
+	}
+
+
+	return full_output;
+
+}
+

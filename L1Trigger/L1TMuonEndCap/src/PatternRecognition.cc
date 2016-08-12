@@ -9,16 +9,16 @@
 
 //hardcoded pattern definitions
 #define PATTERN_SIZE 9
-const PhiMemoryImage pattern1 (0x8000,0,0,0x8000,0,0,0x8000,0,0,0x8000,0,0);
-const PhiMemoryImage pattern2 (0x10000,0,0,0x8000,0,0,0xc000,0,0,0xc000,0,0);
-const PhiMemoryImage pattern3 (0x4000,0,0,0x8000,0,0,0x18000,0,0,0x18000,0,0);
-const PhiMemoryImage pattern4 (0x60000,0,0,0x8000,0,0,0xe000,0,0,0xe000,0,0);
-const PhiMemoryImage pattern5 (0x3000,0,0,0x8000,0,0,0x78000,0,0,0x78000,0,0);
-const PhiMemoryImage pattern6 (0x780000,0,0,0x8000,0,0,0xff00,0,0,0xff00,0,0);
-const PhiMemoryImage pattern7 (0xf00,0,0,0x8000,0,0,0x7f8000,0,0,0x7f8000,0,0);
-const PhiMemoryImage pattern8 (0x7f800000,0,0,0x8000,0,0,0xff00,0,0,0xff00,0,0);//
-const PhiMemoryImage pattern9 (0xff,0,0,0x8000,0,0,0x7f8000,0,0,0x7f8000,0,0);
-const PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pattern7, pattern4, pattern5, pattern2, pattern3, pattern1};
+PhiMemoryImage pattern1 (0x8000,0,0,0x8000,0,0,0x8000,0,0,0x8000,0,0);
+PhiMemoryImage pattern2 (0x10000,0,0,0x8000,0,0,0xc000,0,0,0xc000,0,0);
+PhiMemoryImage pattern3 (0x4000,0,0,0x8000,0,0,0x18000,0,0,0x18000,0,0);
+PhiMemoryImage pattern4 (0x60000,0,0,0x8000,0,0,0xe000,0,0,0xe000,0,0);
+PhiMemoryImage pattern5 (0x3000,0,0,0x8000,0,0,0x78000,0,0,0x78000,0,0);
+PhiMemoryImage pattern6 (0x780000,0,0,0x8000,0,0,0xff00,0,0,0xff00,0,0);
+PhiMemoryImage pattern7 (0xf00,0,0,0x8000,0,0,0x7f8000,0,0,0x7f8000,0,0);
+PhiMemoryImage pattern8 (0x7f800000,0,0,0x8000,0,0,0xff00,0,0,0xff00,0,0);//
+PhiMemoryImage pattern9 (0xff,0,0,0x8000,0,0,0x7f8000,0,0,0x7f8000,0,0);
+PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pattern7, pattern4, pattern5, pattern2, pattern3, pattern1};
  
  
  PatternOutput DetectPatterns(ZonesOutput Eout){
@@ -34,6 +34,8 @@ const PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pat
   	for(int zone=0;zone<4;zone++){
 	
 		
+		//std::cout<<"zone "<<zone<<"\n";
+		//Merged[zone].Print();
   
   		for(int b=0;b<192;b++){//loop over stips of detector zones//was 128 now 192 to accomodate 
   							   //larger phi scale used in neighboring sectors algorithm
@@ -44,14 +46,14 @@ const PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pat
 	
 				bool zona[12] = {false}; //Clear out station presence
 		
-				if((b-15) < 63){ 														//////Due to bug in BitShift function. 
+				if((b-15) < 63){ 														//////Due to bug in BitShift function when shifting by >= field length. 
 					patt[y].BitShift(b-15);			 									//////Can try and fix later before uploading to CMSSW.
 				}																		//////
 				else if((b-15) < 127){													//////
-					patt[y].BitShift(63);patt[y].BitShift(b-78);						//////
+					patt[y].BitShift(63);patt[y].BitShift(1);patt[y].BitShift(b-79);						//////
 				}																		//////
 				else{																	//////
-					patt[y].BitShift(63);patt[y].BitShift(63);patt[y].BitShift(b-141);  //////
+					patt[y].BitShift(63);patt[y].BitShift(1);patt[y].BitShift(63);patt[y].BitShift(1);patt[y].BitShift(b-143);  //////
 				}																		//////
 			
 			
@@ -110,15 +112,17 @@ const PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pat
  
  		for(int k=0;k<192;k++){//was 128
 	
-			int qr = 0, ql = 0, qc = ranka_t[zone][k];
+			int qr = ranka_t[zone][k-1], ql = ranka_t[zone][k+1], qc = ranka_t[zone][k];
 			
-			//if(qc && verbose)
-			//	std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
+			
 		
-			if(k>0){qr=ranka_t[zone][k-1];}
-			if(k<191){ql=ranka_t[zone][k+1];}//was 127
+			if(k==0){qr=0;}
+			if(k==191){ql=0;}//was 127
 		
 			if((qc <= ql) || (qc < qr)){qc = 0;}
+			
+			if(qc )
+			  std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
 		
 			ranka[zone][k] = qc;
 		}
@@ -145,9 +149,13 @@ const PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pat
  	PatternOutput tmp;
 	std::vector<PatternOutput> output (3,tmp);
 	
-	for(int i=0;i<3;i++)
+	for(int i=0;i<3;i++){
+		
+		//std::cout<<"begin pattern dection on bx group "<<i<<"\n";
+		
 		output[i] = DetectPatterns(Zones[i]);
 		
+	}
 		
  	return output;
  

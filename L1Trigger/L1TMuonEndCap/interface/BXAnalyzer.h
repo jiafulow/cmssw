@@ -21,7 +21,7 @@ std::vector<std::vector<ConvertedHit>> GroupBX(std::vector<ConvertedHit> ConvHit
 	for(std::vector<ConvertedHit>::iterator i = ConvHits.begin();i != ConvHits.end();i++){
 	
 		int diff = i->BX() - CentralBX;
-		
+		  
 		if((diff > -3) && (diff < 1))
 			output[0].push_back(*i);
 		
@@ -32,6 +32,64 @@ std::vector<std::vector<ConvertedHit>> GroupBX(std::vector<ConvertedHit> ConvHit
 			output[1].push_back(*i);
 	}
 	
+	for(int i=1;i<3;i++){
+	
+		unsigned int HasAllInNext = 0;
+	
+		for(unsigned int it = 0;it != output[i-1].size();it++){
+			
+			bool InNext = false;
+			
+			for(unsigned int it2 = 0;it2 != output[i].size();it2++){
+		
+				if( output[i-1][it].Phi() == output[i][it2].Phi() &&
+					output[i-1][it].Theta() == output[i][it2].Theta() &&
+					output[i-1][it].Ph_hit() == output[i][it2].Ph_hit() &&
+					output[i-1][it].Phzvl() == output[i][it2].Phzvl() &&
+					output[i-1][it].Station() == output[i][it2].Station() &&
+					output[i-1][it].Sub() == output[i][it2].Sub() &&
+					output[i-1][it].Id() == output[i][it2].Id() &&
+					output[i-1][it].Quality() == output[i][it2].Quality() &&
+					output[i-1][it].Pattern() == output[i][it2].Pattern() &&
+					output[i-1][it].Wire() == output[i][it2].Wire() &&
+					output[i-1][it].Strip() == output[i][it2].Strip() &&
+					output[i-1][it].BX() == output[i][it2].BX()){InNext = true;}
+		
+			}
+			
+			if(InNext)
+				HasAllInNext++;
+		}
+		
+		if(HasAllInNext == output[i-1].size())
+			output[i-1].clear();
+		
+	}
+	
+	
+	
+	for(int i=0;i<3;i++){
+		
+		for(std::vector<ConvertedHit>::iterator it = output[i].begin();it != output[i].end();it++){
+			for(std::vector<ConvertedHit>::iterator it2 = it;it2 != output[i].end();it2++){
+			
+				if(it == it2) continue;
+				
+				if(it->Station() == it2->Station() && it->Id() == it2->Id() && it->IsNeighbor() == it2->IsNeighbor()){//add that phis have to be equal if assuming that a phi position can have only 2 possible thetas
+				
+					it->SetTheta2(it2->Theta());
+					it2->SetTheta2(it->Theta());
+					//std::cout<<"thetas = "<<it2->Theta()<<" and "<<it->Theta()<<"\n";
+					
+					it->AddTheta(it2->Theta());
+					it2->AddTheta(it->Theta());
+				}
+				
+			}
+		}
+	
+	}
+	
 	return output;
 
 }
@@ -40,32 +98,40 @@ std::vector<std::vector<ConvertedHit>> GroupBX(std::vector<ConvertedHit> ConvHit
 PatternOutput DeleteDuplicatePatterns(std::vector<PatternOutput> Pout){
 
 	std::vector<int> tmp (192,0);//was 128
-	std::vector<std::vector<int>> rank (4,tmp), layer(4,tmp),straightness(4,tmp);
+	std::vector<std::vector<int>> rank (4,tmp), layer(4,tmp),straightness(4,tmp),bxgroup(4,tmp);
 	std::vector<ConvertedHit> Hits;
 	
 	for(int i=0;i<3;i++){
 		
 		bool set = 0;
 		
+		
 		for(int zone=0;zone<4;zone++){
 			for(int strip=0;strip<192;strip++){//was 128
 				
-				if(Pout[i].detected.rank[zone][strip] >= rank[zone][strip]){
+				if(Pout[i].detected.rank[zone][strip] > rank[zone][strip]){
 					
 					rank[zone][strip] = Pout[i].detected.rank[zone][strip];
 					layer[zone][strip] = Pout[i].detected.layer[zone][strip];
 					straightness[zone][strip] = Pout[i].detected.straightness[zone][strip];
+					bxgroup[zone][strip] = i+1;
 					set = 1;
 				}
 			}
 		}
 		
-		if(set && (Pout[i].hits.size() > Hits.size())){
+		//if(set) std::cout<<"found pattern\n";
+		
+		if(set ){/*//&& (Pout[i].hits.size() >= Hits.size())){*/
 			
 			std::vector<ConvertedHit> test = Pout[i].hits;
 			
 			for(std::vector<ConvertedHit>::iterator it = test.begin();it != test.end();it++){
-				Hits.push_back(*it);
+			  
+			  
+			  	Hits.push_back(*it);
+			
+			  	//std::cout<<"adding hit in station "<<it->Station()<<" with strip = "<<it->Strip()<<"\n";
 			}
 		}
 		
@@ -77,6 +143,7 @@ PatternOutput DeleteDuplicatePatterns(std::vector<PatternOutput> Pout){
 	qout.rank = rank;
 	qout.layer = layer;
 	qout.straightness = straightness;
+	qout.bxgroup = bxgroup;
 	
 	PatternOutput output;
 	
@@ -86,3 +153,5 @@ PatternOutput DeleteDuplicatePatterns(std::vector<PatternOutput> Pout){
 	return output;
 
 }
+
+
