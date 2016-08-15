@@ -11,7 +11,7 @@
 
 MatchingOutput PhiMatching(SortingOutput Sout){
 
-	bool verbose = true;
+	bool verbose = false;
 
 	std::vector<ConvertedHit> Thits = Sout.Hits();
 	std::vector<std::vector<Winner>> Winners = Sout.Winners();

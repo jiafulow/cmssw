@@ -730,16 +730,16 @@ for(unsigned int i1=0;i1<AllTracks_PreDuplicationCancellation.size();i1++){
 
 		if(!ME13 && fabs(eta) > 1.1) {
 		  // // Extra debugging output - AWB 29.03.16
-		 std::cout << "\nInput: eBX = " << ebx << ", seBX = " << sebx << ", pt = " << xmlpt*1.4 
-		  << ", phi = " << AllTracks[fbest].phi << ", eta = " << eta 
-		  << ", theta = " << AllTracks[fbest].theta << ", sign = " << 1 
-		  << ", quality = " << mode << ", trackaddress = " << 1 
-		  << ", sector = " << sector << std::endl;
-		 std::cout << "Output: BX = " << ebx << ", hwPt = " << outCand.hwPt() << ", hwPhi = " << outCand.hwPhi() 
-		  << ", hwEta = " << outCand.hwEta() << ", hwSign = " << outCand.hwSign() 
-		  << ", hwQual = " << outCand.hwQual() << ", link = " << outCand.link()
-		  << ", processor = " << outCand.processor() 
-		  << ", trackFinderType = " << outCand.trackFinderType() << ", address = "<<xmlpt_address<<"\n\n";
+		 //std::cout << "\nInput: eBX = " << ebx << ", seBX = " << sebx << ", pt = " << xmlpt*1.4 
+		  //<< ", phi = " << AllTracks[fbest].phi << ", eta = " << eta 
+		  //<< ", theta = " << AllTracks[fbest].theta << ", sign = " << 1 
+		  //<< ", quality = " << mode << ", trackaddress = " << 1 
+		  //<< ", sector = " << sector << std::endl;
+		 //std::cout << "Output: BX = " << ebx << ", hwPt = " << outCand.hwPt() << ", hwPhi = " << outCand.hwPhi() 
+		  //<< ", hwEta = " << outCand.hwEta() << ", hwSign = " << outCand.hwSign() 
+		  //<< ", hwQual = " << outCand.hwQual() << ", link = " << outCand.link()
+		  //<< ", processor = " << outCand.processor() 
+		  //<< ", trackFinderType = " << outCand.trackFinderType() << ", address = "<<xmlpt_address<<"\n\n";
 			holder.push_back(outPair);
 			thisTrack.set_isGMT( 1 );
 			

@@ -434,7 +434,7 @@ static float getEtafromBin(int etaBin, int bits=5)
 
 float EmtfPtAssignment::calculatePt(unsigned long Address)
 {
-  bool verbose = true;
+  bool verbose = false;
   int ModeVariables[13][6];
 
   //FIXME: use pointer to avoid a copy:

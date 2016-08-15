@@ -492,14 +492,14 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	
 	
 	if(SectIndex == 9 ){
-		std::cout<<"pl = "<<phLow<<", ps = "<<phShift<<", ph disp = "<<Ph_Disp_Neighbor_[SectIndex][LUTi]<<", >>1 = "<<(Ph_Disp_Neighbor_[SectIndex][LUTi]>>1)<<", LUTi = "<<LUTi<<"\n";
-		std::cout<<"phi = "<<fph<<", theta = "<<th<<", GMT_eta = "<<GetPackedEta(th,SectIndex)<<", bx = "<<BX<<", zoneword = "<<zoneword<<", ph_hit = "<<ph_hit<<", zhit = "<<zhit<<", sindex = "<<sindex<<", cindex = "<<cindex<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
+		//std::cout<<"pl = "<<phLow<<", ps = "<<phShift<<", ph disp = "<<Ph_Disp_Neighbor_[SectIndex][LUTi]<<", >>1 = "<<(Ph_Disp_Neighbor_[SectIndex][LUTi]>>1)<<", LUTi = "<<LUTi<<"\n";
+		//std::cout<<"phi = "<<fph<<", theta = "<<th<<", GMT_eta = "<<GetPackedEta(th,SectIndex)<<", bx = "<<BX<<", zoneword = "<<zoneword<<", ph_hit = "<<ph_hit<<", zhit = "<<zhit<<", sindex = "<<sindex<<", cindex = "<<cindex<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
 		//std::cout<<"ph_zone_bnd1 = "<<ph_zone_bnd1<<", ph_zone_bnd2 = "<<ph_zone_bnd2<<", zone_overlap = "<<zone_overlap<<", and phzvl = "<<phzvl<<"\n";
 	//if(!IsNeighbor){
-	  if(C3.Id() > 9)
-		  std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id() - 9<<" 0 "<<strip<<"\n";
-	  else
-		  std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id()<<" 0 "<<strip<<"\n";
+	  //if(C3.Id() > 9)
+		  //std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id() - 9<<" 0 "<<strip<<"\n";
+	  //else
+		  //std::cout<<BX-3<<" "<<endcap<<" "<<sector<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id()<<" 0 "<<strip<<"\n";
 	//}
 	}
 	

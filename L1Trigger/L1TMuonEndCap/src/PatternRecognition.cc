@@ -121,8 +121,8 @@ PhiMemoryImage patterns[PATTERN_SIZE] = {pattern8, pattern9, pattern6, pattern7,
 		
 			if((qc <= ql) || (qc < qr)){qc = 0;}
 			
-			if(qc )
-			  std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
+			//if(qc )
+			//  std::cout<<"\n"<<k<<":qc = "<<qc<<" straight: "<<stra[zone][k]<<"  lya: "<<lya[zone][k]<<std::endl; 
 		
 			ranka[zone][k] = qc;
 		}
