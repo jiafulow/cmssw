@@ -328,6 +328,7 @@ void L1TMuonEndCapTrackProducer::produce(edm::Event& ev,
 	  std::cout<<"Gen pT/eta/phi = "<<genPt<<" "<<genEta<<" "<<genPhi<<"\n";
 	  
 	  }*/
+	if(S1 && MoreThanOne){ /* Get rid of unused-but-set-variable compiler error */ }
 	 
 	 
    //}
