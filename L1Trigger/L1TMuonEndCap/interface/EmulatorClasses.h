@@ -21,13 +21,13 @@ class ConvertedHit{
 		void SetValues(int phi,int theta,int ph_hit,int phzvl,int station,int sub,int id,int quality,int pattern,int wire,int strip,int BX){
 		
 			_ph = phi;_th = theta;_phit = ph_hit;_phzvl = phzvl;_sta = station;_sub = sub;_id = id;_qual = quality;_patt = pattern;
-			_wire = wire;_strip = strip;_zhit = -999;_bx = BX;
+			_wire = wire;_strip = strip;_zhit = -999;_bx = BX;_th2 = -999;
 		
 		};
 		
 		void SetNull(){
 		
-			_ph = -999;_th = -999;_phit = -999;_phzvl = -999;_sta = -999;_sub = -999;_id = -999;_qual = -999;_patt = 0;
+			_ph = -999;_th = -999;_th2 = -999;_phit = -999;_phzvl = -999;_sta = -999;_sub = -999;_id = -999;_qual = -999;_patt = 0;
 			_wire = -999;_strip = -999;_zhit = -999;
 		};
 		
@@ -47,17 +47,24 @@ class ConvertedHit{
 		
 		void SetTheta(int theta){_th = theta;};
 		
+		void SetTheta2(int theta2){_th2 = theta2;};
+		
 		void SetTP(TriggerPrimitive tp){_tp = tp;};
 		
 		void SetSectorIndex(int sectorIndex){_sectorIndex = sectorIndex;};
 		
-		void SetZoneContribution(std::vector<int> zonecontribution){_zonecont = zonecontribution;};
-		
 		void SetNeighbor(int neighbor){_isNeighbor = neighbor;};
+		
+		void AddTheta(int theta){_thetas.push_back(theta);};
+		
+		void SetZoneWord(int zword){_ZoneWord = zword;};
+		
+		
 		
 		
 		int Phi(){return _ph;};
 		int Theta(){return _th;};
+		int Theta2(){return _th2;};
 		int Ph_hit(){return _phit;};
 		int Phzvl(){return _phzvl;};
 		int Station(){return _sta;};
@@ -72,16 +79,19 @@ class ConvertedHit{
 		int SectorIndex(){return _sectorIndex;};
 		int IsNeighbor(){return _isNeighbor;};
 		TriggerPrimitive TP(){return _tp;};
-		std::vector<int> ZoneContribution(){return _zonecont;};
+		std::vector<int> AllThetas(){return _thetas;};
+		int ZoneWord(){return _ZoneWord;};
 		
 		
 	private:
 	
-		int _ph,_th,_phit,_phzvl,_sta,_sub,_id,_qual,_patt,_wire,_strip,_zhit,_bx, _sectorIndex, _isNeighbor;
+		int _ph,_th, _th2,_phit,_phzvl,_sta,_sub,_id,_qual,_patt,_wire,_strip,_zhit,_bx, _sectorIndex, _isNeighbor, _ZoneWord;
 		TriggerPrimitive _tp;
-		std::vector<int> _zonecont;
+		std::vector<int> _thetas;
 
 };
+
+
 
 struct ZonesOutput{
 
@@ -92,7 +102,7 @@ struct ZonesOutput{
 
 struct QualityOutput{
 
-	Code rank, layer,straightness;
+	Code rank, layer,straightness, bxgroup;
 
 	
 };
@@ -102,6 +112,7 @@ struct PatternOutput{
 
 	QualityOutput detected;
 	std::vector<ConvertedHit> hits;
+	//int bxgroup;
 
 };
 
@@ -121,6 +132,7 @@ class Winner{
 		
 		int Rank(){return _rank;}
 		int Strip(){return _strip;}
+		int BXGroup(){return _bxgroup;}
 		
 		void SetValues(int rank, int strip){
 		
@@ -131,11 +143,17 @@ class Winner{
 		
 			_rank = rank;
 		}
+		
+		void SetBXGroup(int bxgroup){
+		
+			_bxgroup = bxgroup;
+		
+		}
 	
 	private:
 	
 	
-		int _rank, _strip;
+		int _rank, _strip, _bxgroup;
 		
 };
 
@@ -160,6 +178,7 @@ class SortingOutput{
 
 
 typedef std::vector<std::vector<std::vector<std::vector<ConvertedHit>>>> ThOutput;
+typedef std::vector<std::vector<std::vector<std::vector<int>>>> ThOutput2;
 typedef std::vector<std::vector<std::vector<ConvertedHit>>> PhOutput;
 class MatchingOutput{
 
@@ -179,11 +198,19 @@ class MatchingOutput{
 			_segment = segment;
 		}
 		
+		void setM2(ThOutput2 t2){
+		
+			_th_output2 = t2;
+		
+		
+		}
+		
 		
 		
 		std::vector<ConvertedHit> Hits(){return _hits;}; 
 		std::vector<std::vector<Winner>> Winners(){return _winners;};
 		ThOutput ThetaMatch(){return _th_output;};
+		ThOutput2 TMatch2(){return _th_output2;};
 		PhOutput PhiMatch(){return _ph_output;};
 		std::vector<int> Segment(){return _segment;};
 		
@@ -193,6 +220,7 @@ class MatchingOutput{
 		std::vector<ConvertedHit> _hits;
 		std::vector<std::vector<Winner>> _winners;
 		ThOutput _th_output;
+		ThOutput2 _th_output2;
 		PhOutput _ph_output;
 		std::vector<int> _segment;
 	
