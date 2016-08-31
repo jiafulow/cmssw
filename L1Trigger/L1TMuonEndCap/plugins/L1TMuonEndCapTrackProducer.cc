@@ -795,7 +795,7 @@ for(unsigned int i1=0;i1<AllTracks_PreDuplicationCancellation.size();i1++){
 		 //std::cout << "\nInput: eBX = " << ebx << ", seBX = " << sebx << ", pt = " << xmlpt*1.4 
 		 // << ", phi = " << AllTracks[fbest].phi << ", eta = " << eta 
 		 // << ", theta = " << AllTracks[fbest].theta << ", sign = " << 1 
-		//  << ", quality = " << mode << ", trackaddress = " << 1 
+		 // << ", quality = " << mode << ", trackaddress = " << 1 
 		 // << ", sector = " << sector << std::endl;
 		 //std::cout << "Output: BX = " << ebx << ", hwPt = " << tempTrack.pt << ", hwPhi = " << outCand.hwPhi() 
 		 // << ", hwEta = " << outCand.hwEta() << ", hwSign = " << outCand.hwSign() 

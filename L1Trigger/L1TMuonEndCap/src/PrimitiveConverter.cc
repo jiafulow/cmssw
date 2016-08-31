@@ -537,7 +537,7 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	Hit.SetNeighbor(in);
 	Hit.SetZoneWord(zoneword);
 
-	if(Hit.Theta() != -999 && Hit.Phi() > 0 && SectIndex == 1){//if theta is valid
+	if(Hit.Theta() != -999 && Hit.Phi() > 0 ){//if theta is valid
 		ConvHits.push_back(Hit);
 		/*if(verbose){	
 			std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;
