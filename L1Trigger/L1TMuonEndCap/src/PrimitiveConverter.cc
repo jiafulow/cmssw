@@ -79,7 +79,7 @@ PrimitiveConverter::PrimitiveConverter(){
 
 }
 
-std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimitive> TriggPrim, int SectIndex){
+std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimitive> TriggPrim, int SectIndex, int ev){
 
 	//bool verbose = false;
 
@@ -323,6 +323,16 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	}
 	
 	//std::cout<<"pl = "<<phLow<<", ps = "<<phShift<<", ph disp = "<<Ph_Disp_Neighbor_[SectIndex][LUTi]<<", >>1 = "<<(Ph_Disp_Neighbor_[SectIndex][LUTi]>>1)<<", LUTi = "<<LUTi<<"\n";
+	
+	if (LUTi < 0){
+		std::cout << "DEBUG event = "<<ev<<"\n";
+	  std::cout << "DEBUG:  LUTi    = " << LUTi << "\n";
+	  std::cout << "DEBUG:  nId     = " << nId << "\n";
+	  std::cout << "DEBUG:  station = " << station << "\n";
+	  std::cout << "DEBUG:  sub     = " << sub << "\n";
+	  std::cout << "DEBUG:  skipping...\n";
+	  continue;
+	}
 	ph_hit = phLow + phShift + (Ph_Disp_Neighbor_[SectIndex][LUTi]>>1);
 	
 	////////////////////////
@@ -494,10 +504,10 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	///////////////////////////////////////////////////////
 	
 	
-	if(SectIndex == 15 ){
+	if(SectIndex == 19 ){
 		//std::cout<<"pl = "<<phLow<<", ps = "<<phShift<<", ph disp = "<<Ph_Disp_Neighbor_[SectIndex][LUTi]<<", >>1 = "<<(Ph_Disp_Neighbor_[SectIndex][LUTi]>>1)<<", LUTi = "<<LUTi<<"\n";
-		std::cout<<"phi = "<<fph<<", theta = "<<th<<", GMT_eta = "<<GetPackedEta(th,SectIndex)<<", bx = "<<BX<<", zoneword = "<<zoneword<<", ph_hit = "<<ph_hit<<", zhit = "<<zhit<<", sindex = "<<sindex<<", cindex = "<<cindex<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
-		//std::cout<<"ph_zone_bnd1 = "<<ph_zone_bnd1<<", ph_zone_bnd2 = "<<ph_zone_bnd2<<", zone_overlap = "<<zone_overlap<<", and phzvl = "<<phzvl<<"\n";
+		std::cout<<"phi = "<<fph<<", theta = "<<th<<", GMT_eta = "<<GetPackedEta(th,SectIndex)<<", bx = "<<BX<<",phzvl = "<<phzvl<<", zoneword = "<<zoneword<<", ph_hit = "<<ph_hit<<", zhit = "<<zhit<<", sindex = "<<sindex<<", cindex = "<<cindex<<", station = "<<station<<", ring = "<<ring<<", id = "<<Id<<", sector "<<SectIndex<<",sub = "<<sub<<", strip = "<<strip<<", wire = "<<wire<<", IsNeighbor = "<<IsNeighbor<<"\n";
+		std::cout<<"ph_zone_bnd1 = "<<ph_zone_bnd1<<", ph_zone_bnd2 = "<<ph_zone_bnd2<<", zone_overlap = "<<zone_overlap<<", and phzvl = "<<phzvl<<"\n";
 	if(!IsNeighbor){
 	  if(C3.Id() > 9)
 		  std::cout<<BX-3<<" "<<endcap<<" "<<SectIndex + 1 - (endcap - 1)*6<<" "<<sub<<" "<<station<<" 1 "<<quality<<" "<<pattern<<" "<<wire<<" "<<C3.Id() - 9<<" 0 "<<strip<<"\n";
@@ -527,7 +537,7 @@ std::vector<ConvertedHit> PrimitiveConverter::convert(std::vector<TriggerPrimiti
 	Hit.SetNeighbor(in);
 	Hit.SetZoneWord(zoneword);
 
-	if(Hit.Theta() != -999 && Hit.Phi() > 0 ){//if theta is valid
+	if(Hit.Theta() != -999 && Hit.Phi() > 0 && SectIndex == 1){//if theta is valid
 		ConvHits.push_back(Hit);
 		/*if(verbose){	
 			std::cout<<"Phzvl() = "<<Hit.Phzvl()<<", ph_hit = "<<Hit.Ph_hit()<<", station = "<<Hit.Station()<<" and id = "<<Hit.Id()<<std::endl;

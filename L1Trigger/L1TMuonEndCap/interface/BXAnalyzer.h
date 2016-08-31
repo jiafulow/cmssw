@@ -77,8 +77,8 @@ std::vector<std::vector<ConvertedHit>> GroupBX(std::vector<ConvertedHit> ConvHit
 				
 				if(it->Station() == it2->Station() && it->Id() == it2->Id() && it->IsNeighbor() == it2->IsNeighbor()){//add that phis have to be equal if assuming that a phi position can have only 2 possible thetas
 				
-					it->SetTheta2(it2->Theta());
-					it2->SetTheta2(it->Theta());
+					//it->SetTheta2(it2->Theta());
+					//it2->SetTheta2(it->Theta());
 					//std::cout<<"thetas = "<<it2->Theta()<<" and "<<it->Theta()<<"\n";
 					
 					it->AddTheta(it2->Theta());

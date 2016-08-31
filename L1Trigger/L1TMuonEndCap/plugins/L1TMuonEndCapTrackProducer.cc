@@ -342,7 +342,7 @@ for(int SectIndex=0;SectIndex<NUM_SECTORS;SectIndex++){//perform TF on all 12 se
   ///////////////// TP Conversion //////////////////////  Output is vector of Converted Hits
   //////////////////////////////////////////////////////
 
- 	std::vector<ConvertedHit> ConvHits = primConv_.convert(tester,SectIndex);
+ 	std::vector<ConvertedHit> ConvHits = primConv_.convert(tester,SectIndex, ev.id().event());
 	CHits[SectIndex] = ConvHits;
 	
 	
@@ -795,7 +795,7 @@ for(unsigned int i1=0;i1<AllTracks_PreDuplicationCancellation.size();i1++){
 		 //std::cout << "\nInput: eBX = " << ebx << ", seBX = " << sebx << ", pt = " << xmlpt*1.4 
 		 // << ", phi = " << AllTracks[fbest].phi << ", eta = " << eta 
 		 // << ", theta = " << AllTracks[fbest].theta << ", sign = " << 1 
-		 // << ", quality = " << mode << ", trackaddress = " << 1 
+		//  << ", quality = " << mode << ", trackaddress = " << 1 
 		 // << ", sector = " << sector << std::endl;
 		 //std::cout << "Output: BX = " << ebx << ", hwPt = " << tempTrack.pt << ", hwPhi = " << outCand.hwPhi() 
 		 // << ", hwEta = " << outCand.hwEta() << ", hwSign = " << outCand.hwSign() 
