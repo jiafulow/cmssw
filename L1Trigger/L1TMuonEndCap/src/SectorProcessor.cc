@@ -337,8 +337,10 @@ void SectorProcessor::process_single_bx(
   std::map<int, TriggerPrimitiveCollection> selected_rpc_map;
   std::map<int, TriggerPrimitiveCollection> selected_gem_map;
   std::map<int, TriggerPrimitiveCollection> selected_prim_map;
+  std::map<int, TriggerPrimitiveCollection> inclusive_selected_prim_map;
 
   EMTFHitCollection conv_hits;  // "converted" hits converted by primitive converter
+  EMTFHitCollection inclusive_conv_hits;
 
   zone_array<EMTFRoadCollection> zone_roads;  // each zone has its road collection
 
@@ -363,6 +365,13 @@ void SectorProcessor::process_single_bx(
   // From src/PrimitiveConversion.cc
   prim_conv.process(selected_prim_map, conv_hits);
   extended_conv_hits.push_back(conv_hits);
+
+  {
+    // Keep all the converted hits for the use of data-emulator comparisons.
+    // They include the extra ones that are not used in track building and the subsequent steps.
+    prim_sel.merge_no_truncate(selected_csc_map, selected_rpc_map, selected_gem_map, inclusive_selected_prim_map);
+    prim_conv.process(inclusive_selected_prim_map, inclusive_conv_hits);
+  }
 
   // Detect patterns in all zones, find 3 best roads in each zone
   // From src/PatternRecognition.cc
@@ -392,7 +401,7 @@ void SectorProcessor::process_single_bx(
   // ___________________________________________________________________________
   // Output
 
-  out_hits.insert(out_hits.end(), conv_hits.begin(), conv_hits.end());
+  out_hits.insert(out_hits.end(), inclusive_conv_hits.begin(), inclusive_conv_hits.end());
   out_tracks.insert(out_tracks.end(), best_tracks.begin(), best_tracks.end());
 
   return;
