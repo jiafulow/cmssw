@@ -34,7 +34,7 @@ void SectorProcessorLUT::read(unsigned pc_lut_version) {
       << "Trying to use EMTF pc_lut_version = " << pc_lut_version << ", does not exist!";
   // Will catch user trying to run with Global Tag settings on 2016 data, rather than fakeEmtfParams. - AWB 08.06.17
 
-  std::string coord_lut_path = "L1Trigger/L1TMuonEndCap/data/emtf_luts/" + coord_lut_dir + "/";
+  std::string coord_lut_path = "L1Trigger/L1TMuon/data/emtf_luts/" + coord_lut_dir + "/";
 
   read_file(coord_lut_path+"ph_init_neighbor.txt",     ph_init_neighbor_);
   read_file(coord_lut_path+"ph_disp_neighbor.txt",     ph_disp_neighbor_);
@@ -43,7 +43,7 @@ void SectorProcessorLUT::read(unsigned pc_lut_version) {
   read_file(coord_lut_path+"th_lut_neighbor.txt",      th_lut_neighbor_);
   read_file(coord_lut_path+"th_corr_lut_neighbor.txt", th_corr_lut_neighbor_);
 
-  std::string cppf_coord_lut_path = "L1Trigger/L1TMuonEndCap/data/cppf_luts/angleScale_v1/";
+  std::string cppf_coord_lut_path = "L1Trigger/L1TMuon/data/cppf_luts/angleScale_v1/";
 
   read_cppf_file(cppf_coord_lut_path, cppf_ph_lut_, cppf_th_lut_);  // cppf filenames are hardcoded in the function
 

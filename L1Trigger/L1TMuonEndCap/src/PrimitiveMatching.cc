@@ -477,11 +477,6 @@ void PrimitiveMatching::insert_hits(
       //(conv_hit_i.Roll()       == conv_hit_j.Roll()) &&      // For RPC clusters
       true
     ) {
-      // All duplicates with the same strip but different wire must have same phi_fp
-      //assert(conv_hit_i.Phi_fp() == conv_hit_j.Phi_fp());
-
-      //track.push_Hit( conv_hit_i );
-
       // Dirty hack
       EMTFHit tmp_hit = conv_hit_j;
       tmp_hit.set_theta_fp( conv_hit_i.Theta_fp() );

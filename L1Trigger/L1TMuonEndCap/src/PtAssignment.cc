@@ -70,8 +70,11 @@ void PtAssignment::process(
       address = pt_assign_engine_->calculate_address(track);
       xmlpt   = pt_assign_engine_->calculate_pt(address);
 
-      // // Un-comment to check address packing / unpacking
-      // assert( fabs(xmlpt - pt_assign_engine_->calculate_pt(track)) < 0.001 );
+      // Check address packing / unpacking
+      if (not( fabs(xmlpt - pt_assign_engine_->calculate_pt(track)) < 0.001 ) )
+        { edm::LogWarning("L1T") << "EMTF pT assignment mismatch: xmlpt = " << xmlpt
+                                 << ", pt_assign_engine_->calculate_pt(track)) = "
+                                 << pt_assign_engine_->calculate_pt(track); }
 
       pt  = (xmlpt < 0.) ? 1. : xmlpt;  // Matt used fabs(-1) when mode is invalid
       pt *= pt_assign_engine_->scale_pt(pt, track.Mode());  // Multiply by some factor to achieve 90% efficiency at threshold

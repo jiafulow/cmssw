@@ -408,11 +408,13 @@ void PatternRecognition::process_single_zone(
             is_lifetime_up = true;
           } else if (drift_time == 1 && bx1 == 0 && bx0 == 1) {
             is_lifetime_up = true;
+          } else if (drift_time == 0) {
+            is_lifetime_up = true;
           } else {
-            // WARNING: It won't work if drift_time is not 1 or 2. The
+            // WARNING: It won't work if drift_time is not 0, 1 or 2. The
             //          bx_shifter keeps track of a number of booleans
             //          from BX 0, 1, ..., drift_time.
-            assert(drift_time == 2 || drift_time == 1);
+            assert(drift_time == 2 || drift_time == 1 || drift_time == 0);
           }
 
           bx2 = bx1;
