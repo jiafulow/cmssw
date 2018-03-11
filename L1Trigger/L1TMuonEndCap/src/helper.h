@@ -15,6 +15,17 @@ void __assert_no_abort(const char *assertion, const char *file, unsigned int lin
 }
 #endif
 
+#ifdef NDEBUG
+# define assert_log_error(expr) ((void)0)
+#else
+# define assert_log_error(expr) ((void)((expr) || (__assert_log_error(#expr, __FILE__, __LINE__, __PRETTY_FUNCTION__),0)))
+template<typename T=void>
+void __assert_log_error(const char *assertion, const char *file, unsigned int line, const char * function) {
+  //std::cout << file << ":" << line << ": " << function << ": Assertion `" << assertion << "' failed." << std::endl;
+  edm::LogError("L1T") << file << ":" << line << ": " << function << ": Assertion `" << assertion << "' failed.";
+}
+#endif
+
 
 namespace {
 

@@ -6,13 +6,16 @@
 #include <iostream>
 #include <sstream>
 
+#include "helper.h"  // assert_log_error
+
+
 const PtAssignmentEngineAux2017& PtAssignmentEngine2017::aux() const {
   static const PtAssignmentEngineAux2017 instance; // KK: arguable design solution, but const qualifier makes it thread-safe anyway
   return instance;
 }
 
 float PtAssignmentEngine2017::scale_pt(const float pt, const int mode) const {
-  assert(ptLUTVersion_ >= 6);
+  assert_log_error(ptLUTVersion_ >= 6);
 
   float pt_xml   = -99;
   float pt_scale = -99;
@@ -35,7 +38,7 @@ float PtAssignmentEngine2017::scale_pt(const float pt, const int mode) const {
 }
 
 float PtAssignmentEngine2017::unscale_pt(const float pt, const int mode) const {
-  assert(ptLUTVersion_ >= 6);
+  assert_log_error(ptLUTVersion_ >= 6);
 
   float pt_unscale = -99;
 

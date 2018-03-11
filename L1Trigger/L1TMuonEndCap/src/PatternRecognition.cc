@@ -1,6 +1,6 @@
 #include "L1Trigger/L1TMuonEndCap/interface/PatternRecognition.h"
 
-#include "helper.h"  // to_hex, to_binary
+#include "helper.h"  // to_hex, to_binary, assert_log_error
 
 namespace {
   const int padding_w_st1 = 15;
@@ -38,7 +38,7 @@ void PatternRecognition::configure_details() {
     // Normal patterns
     for (const auto& s: pattDefinitions_) {
       const std::vector<std::string>& tokens = split_string(s, ',', ':');  // split by comma or colon
-      assert(tokens.size() == 9);  // want to find 9 numbers
+      assert_log_error(tokens.size() == 9);  // want to find 9 numbers
 
       std::vector<std::string>::const_iterator tokens_it = tokens.begin();
 
@@ -56,7 +56,7 @@ void PatternRecognition::configure_details() {
 
       // There can only be one zone hit in the key station in the pattern
       // and it has to be this magic number
-      assert(st2_max == padding_w_st3 && st2_min == padding_w_st3);
+      assert_log_error(st2_max == padding_w_st3 && st2_min == padding_w_st3);
 
       // There is extra "padding" in st1 w.r.t st2,3,4
       // Add the extra padding to st2,3,4
@@ -91,7 +91,7 @@ void PatternRecognition::configure_details() {
     // Symmetrical patterns
     for (const auto& s: symPattDefinitions_) {
       const std::vector<std::string>& tokens = split_string(s, ',', ':');  // split by comma or colon
-      assert(tokens.size() == 17);  // want to find 17 numbers
+      assert_log_error(tokens.size() == 17);  // want to find 17 numbers
 
       std::vector<std::string>::const_iterator tokens_it = tokens.begin();
 
@@ -117,8 +117,8 @@ void PatternRecognition::configure_details() {
 
       // There can only be one zone hit in the key station in the pattern
       // and it has to be this magic number
-      assert(st2_max1 == padding_w_st3 && st2_min1 == padding_w_st3);
-      assert(st2_max2 == padding_w_st3 && st2_min2 == padding_w_st3);
+      assert_log_error(st2_max1 == padding_w_st3 && st2_min1 == padding_w_st3);
+      assert_log_error(st2_max2 == padding_w_st3 && st2_min2 == padding_w_st3);
 
       // There is extra "padding" in st1 w.r.t st2,3,4
       // Add the extra padding to st2,3,4
@@ -414,7 +414,7 @@ void PatternRecognition::process_single_zone(
             // WARNING: It won't work if drift_time is not 0, 1 or 2. The
             //          bx_shifter keeps track of a number of booleans
             //          from BX 0, 1, ..., drift_time.
-            assert(drift_time == 2 || drift_time == 1 || drift_time == 0);
+            assert_log_error(drift_time == 2 || drift_time == 1 || drift_time == 0);
           }
 
           bx2 = bx1;
